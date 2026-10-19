@@ -12,8 +12,10 @@ set -euo pipefail
 EUFY_LOGIN_URL="https://home-api.eufylife.com/v1/user/email/login"
 EUFY_CLIENT_ID="eufyhome-app"
 EUFY_CLIENT_SECRET="GQCpr9dSp3uQpsOMgJ4xQ"
+EUFY_COUNTRY="NL"
+EUFY_TIMEZONE="Europe/Amsterdam"
 
-TUYA_URL="https://a1.tuyaeu.com"
+TUYA_URL="https://a1.tuyaeu.com" # replaced by the account's region after login
 TUYA_CLIENT_ID="yx5v9uc3ef9wg3v9atje"
 TUYA_APP_SECRET="s8x78u7xwymasd9kqa7a73pjhxqsedaj"
 TUYA_BMP_SECRET="cepev5pfnhua4dkqkdpmnrdxx378mpjr"
@@ -98,8 +100,25 @@ EOF
   printf "%${width}s" "$result" | tr ' ' 0 | tr 'A-F' 'a-f'
 }
 
+# The Eufy app's request profile.
+eufy_curl() {
+  curl -sS -H "User-Agent: EufyHome-Android-3.1.3-753" -H "category: Home" -H "clientType: 2" \
+    -H "language: en" -H "country: $EUFY_COUNTRY" -H "timezone: $EUFY_TIMEZONE" \
+    -H "openudid: sdk_gphone64_arm64" "$@"
+}
+
+tuya_origin() {
+  case "$1" in
+    EU) echo "https://a1.tuyaeu.com" ;;
+    AZ) echo "https://a1.tuyaus.com" ;;
+    AY) echo "https://a1.tuyacn.com" ;;
+    IN) echo "https://a1.tuyain.com" ;;
+    *) fail "onbekende Tuya-regio '$1'" ;;
+  esac
+}
+
 TUYA_SID=""
-TUYA_DEVICE_ID=$(LC_ALL=C tr -dc 'A-Za-z0-9' </dev/urandom | head -c 44 || true)
+TUYA_DEVICE_ID="8534c8ec0ed0$(openssl rand -hex 16)"
 
 # tuya_call ACTION VERSION POSTDATA [key=value ...] -> prints the "result" JSON.
 tuya_call() {
@@ -109,7 +128,7 @@ tuya_call() {
     "a=$action" "v=$version" "appVersion=2.4.0" "clientId=$TUYA_CLIENT_ID"
     "deviceId=$TUYA_DEVICE_ID" "et=0.0.1" "lang=en" "os=Android" "osSystem=12"
     "platform=sdk_gphone64_arm64" "requestId=$(uuidgen | tr 'A-Z' 'a-z')"
-    "sdkVersion=3.0.8cAnker" "time=$(date +%s)" "timeZoneId=Europe/Amsterdam" "ttid=android"
+    "sdkVersion=3.0.8cAnker" "time=$(date +%s)" "timeZoneId=$EUFY_TIMEZONE" "ttid=android"
     "$@"
   )
   [ -n "$TUYA_SID" ] && params+=("sid=$TUYA_SID")
@@ -136,13 +155,12 @@ tuya_call() {
 
 main() {
   local email password login uid country tuya_uid challenge encrypted session gid devices homes
+  local home_host settings region
   read -rp "Eufy e-mail: " email
   read -rsp "Eufy wachtwoord: " password
   echo ""
 
-  login=$(curl -sS -X POST "$EUFY_LOGIN_URL" \
-    -H "Content-Type: application/json" -H "User-Agent: EufyHome-Android-2.4.0" \
-    -H "clientType: 2" \
+  login=$(eufy_curl -X POST "$EUFY_LOGIN_URL" -H "Content-Type: application/json" \
     -d "$(jq -nc --arg id "$EUFY_CLIENT_ID" --arg secret "$EUFY_CLIENT_SECRET" \
       --arg email "$email" --arg password "$password" \
       '{client_id: $id, client_Secret: $secret, email: $email, password: $password}')")
@@ -152,6 +170,14 @@ main() {
   uid=$(jq -r '.user_info.id' <<<"$login")
   country=$(jq -r '.user_info.phone_code // "31" | tostring' <<<"$login")
   tuya_uid="eh-$uid"
+
+  # The account's settings name the Tuya region its devices live in.
+  home_host=$(jq -r '.user_info.request_host // "https://api.eufylife.com"' <<<"$login")
+  settings=$(eufy_curl "${home_host%/}/v1/user/setting" \
+    -H "token: $(jq -r '.access_token' <<<"$login")" -H "id: $uid")
+  region=$(jq -r '.setting.home_setting.tuya_home.tuya_region_code // "EU"' <<<"$settings" 2>/dev/null ||
+    echo EU)
+  TUYA_URL=$(tuya_origin "$region")
 
   challenge=$(tuya_call tuya.m.user.uid.token.create 1.0 \
     "$(jq -nc --arg uid "$tuya_uid" --arg cc "$country" '{uid: $uid, countryCode: $cc}')")
