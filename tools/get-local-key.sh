@@ -173,7 +173,8 @@ main() {
 
   # The account's settings name the Tuya region its devices live in.
   home_host=$(jq -r '.user_info.request_host // "https://api.eufylife.com"' <<<"$login")
-  settings=$(eufy_curl "${home_host%/}/v1/user/setting" \
+  home_host=$(sed -E 's#^(https://[^/]+).*#\1#' <<<"$home_host")
+  settings=$(eufy_curl "$home_host/v1/user/setting" \
     -H "token: $(jq -r '.access_token' <<<"$login")" -H "id: $uid")
   region=$(jq -r '.setting.home_setting.tuya_home.tuya_region_code // "EU"' <<<"$settings" 2>/dev/null ||
     echo EU)
