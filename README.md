@@ -27,8 +27,10 @@ pad direction). Set those in the Eufy app.
 
 1. Give the mower a fixed IP address in your router.
 2. Get the device ID and local key once with `tools/get-local-key.sh`. It asks for
-   your Eufy email and password, prints the key and stores nothing. This is the only
-   step that uses your Eufy account. The key changes if you re-pair the mower.
+   your Eufy email and password, prints the key and stores nothing. It needs only
+   tools that ship with macOS 15 or later (bash, curl, openssl, bc, jq, xxd). This is
+   the only step that uses your Eufy account. The key changes if you re-pair the
+   mower.
 3. Install through HACS (custom repository, category *Integration*), restart, and add
    **Eufy E15 Local** with IP, device ID and local key.
 
