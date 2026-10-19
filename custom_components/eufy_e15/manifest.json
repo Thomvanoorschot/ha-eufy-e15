@@ -1,0 +1,14 @@
+{
+  "domain": "eufy_e15",
+  "name": "Eufy E15 Local",
+  "codeowners": ["@Thomvanoorschot"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/Thomvanoorschot/ha-eufy-e15",
+  "integration_type": "device",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/Thomvanoorschot/ha-eufy-e15/issues",
+  "loggers": ["tinytuya"],
+  "requirements": ["tinytuya==1.20.0"],
+  "version": "0.1.0"
+}

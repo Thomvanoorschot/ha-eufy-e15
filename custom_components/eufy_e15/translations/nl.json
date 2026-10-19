@@ -1,0 +1,160 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Eufy E15",
+        "description": "Verbind met de maaier via je lokale netwerk. Haal device-ID en local key eenmalig op met `tools/get-local-key.sh`; er wordt geen Eufy-account opgeslagen.",
+        "data": {
+          "host": "IP-adres",
+          "device_id": "Device-ID",
+          "local_key": "Local key"
+        },
+        "data_description": {
+          "host": "Geef de maaier een vast adres in je router.",
+          "local_key": "16 tekens. Verandert als je de maaier opnieuw koppelt in de app."
+        }
+      },
+      "reconfigure": {
+        "title": "Verbinding bijwerken",
+        "data": {
+          "host": "IP-adres",
+          "local_key": "Local key"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Kan de maaier niet bereiken, of de local key klopt niet.",
+      "invalid_local_key": "De local key moet 16 tekens zijn.",
+      "not_an_e15": "Het apparaat antwoordt, maar lijkt geen E15.",
+      "unknown": "Onverwachte fout."
+    },
+    "abort": {
+      "already_configured": "Deze maaier is al ingesteld.",
+      "reconfigure_successful": "Verbinding bijgewerkt."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "allow_control": "Bediening toestaan (starten, pauzeren, naar huis en instellingen)"
+        },
+        "data_description": {
+          "allow_control": "Uit: Home Assistant kijkt alleen mee."
+        }
+      }
+    }
+  },
+  "entity": {
+    "lawn_mower": {
+      "mower": {}
+    },
+    "sensor": {
+      "battery": {
+        "name": "Batterij"
+      },
+      "mission": {
+        "name": "Taak",
+        "state": {
+          "none": "Geen",
+          "recharge": "Terug naar laadstation",
+          "mapping": "Kaart maken",
+          "whole_lawn": "Hele gazon",
+          "mapping_while_mowing": "Kaart maken tijdens maaien",
+          "temporary": "Tijdelijke taak",
+          "remote_control": "Handbediening",
+          "scheduled_whole_lawn": "Gepland, hele gazon",
+          "scheduled_mapping": "Gepland, kaart maken",
+          "zone": "Zone",
+          "scheduled_zone": "Geplande zone",
+          "box": "Vak",
+          "edge": "Randen maaien",
+          "scheduled_edge": "Gepland randen maaien",
+          "other": "Anders"
+        }
+      },
+      "phase": {
+        "name": "Fase",
+        "state": {
+          "none": "Geen",
+          "relocating": "Positie bepalen",
+          "leaving_station": "Verlaat laadstation",
+          "saving_map": "Kaart opslaan",
+          "setting_blade_height": "Maaihoogte instellen",
+          "defogging": "Ontwasemen",
+          "other": "Anders"
+        }
+      },
+      "wifi_signal": {
+        "name": "Wifi-signaal"
+      },
+      "network": {
+        "name": "Netwerk",
+        "state": {
+          "none": "Geen",
+          "wifi": "Wifi",
+          "cellular": "Mobiel"
+        }
+      },
+      "map_save_progress": {
+        "name": "Voortgang kaart opslaan"
+      },
+      "blade_used_time": {
+        "name": "Gebruik maaimes"
+      },
+      "base_station_used_time": {
+        "name": "Gebruik laadstation"
+      },
+      "last_report": {
+        "name": "Laatste melding"
+      },
+      "last_session": {
+        "name": "Laatste maaibeurt"
+      }
+    },
+    "binary_sensor": {
+      "on_station": {
+        "name": "Op laadstation"
+      },
+      "problem": {
+        "name": "Probleem"
+      },
+      "rain_auto_return": {
+        "name": "Terug bij regen"
+      },
+      "child_lock": {
+        "name": "Kinderslot"
+      }
+    },
+    "number": {
+      "mow_height": {
+        "name": "Maaihoogte"
+      },
+      "volume": {
+        "name": "Volume"
+      }
+    },
+    "switch": {
+      "smart_no_go_zones": {
+        "name": "Slimme verboden zones voorstellen"
+      },
+      "sparse_lawn_optimization": {
+        "name": "Geel gras maaien"
+      }
+    }
+  },
+  "exceptions": {
+    "control_disabled": {
+      "message": "Bediening staat uit in de opties van de integratie."
+    },
+    "write_failed": {
+      "message": "Kon het commando niet naar de maaier sturen: {error}"
+    },
+    "map_saving": {
+      "message": "De maaier slaat de kaart op; probeer het zo opnieuw."
+    },
+    "not_mowing": {
+      "message": "De maaier kan alleen pauzeren tijdens het maaien."
+    }
+  }
+}

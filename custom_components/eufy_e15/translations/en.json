@@ -1,0 +1,160 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Eufy E15",
+        "description": "Connect to the mower over your local network. Get the device ID and local key once with `tools/get-local-key.sh`; no Eufy account is stored.",
+        "data": {
+          "host": "IP address",
+          "device_id": "Device ID",
+          "local_key": "Local key"
+        },
+        "data_description": {
+          "host": "Give the mower a fixed address in your router.",
+          "local_key": "16 characters. Changes when the mower is re-paired in the app."
+        }
+      },
+      "reconfigure": {
+        "title": "Update connection",
+        "data": {
+          "host": "IP address",
+          "local_key": "Local key"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not reach the mower, or the local key is wrong.",
+      "invalid_local_key": "The local key must be 16 characters.",
+      "not_an_e15": "The device answered, but does not look like an E15.",
+      "unknown": "Unexpected error."
+    },
+    "abort": {
+      "already_configured": "This mower is already configured.",
+      "reconfigure_successful": "Connection updated."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "allow_control": "Allow control (start, pause, dock and settings)"
+        },
+        "data_description": {
+          "allow_control": "Off: Home Assistant only observes the mower."
+        }
+      }
+    }
+  },
+  "entity": {
+    "lawn_mower": {
+      "mower": {}
+    },
+    "sensor": {
+      "battery": {
+        "name": "Battery"
+      },
+      "mission": {
+        "name": "Task",
+        "state": {
+          "none": "None",
+          "recharge": "Returning to charge",
+          "mapping": "Mapping",
+          "whole_lawn": "Whole lawn",
+          "mapping_while_mowing": "Mapping while mowing",
+          "temporary": "Temporary task",
+          "remote_control": "Remote control",
+          "scheduled_whole_lawn": "Scheduled whole lawn",
+          "scheduled_mapping": "Scheduled mapping",
+          "zone": "Zone",
+          "scheduled_zone": "Scheduled zone",
+          "box": "Box",
+          "edge": "Edge trimming",
+          "scheduled_edge": "Scheduled edge trimming",
+          "other": "Other"
+        }
+      },
+      "phase": {
+        "name": "Phase",
+        "state": {
+          "none": "None",
+          "relocating": "Positioning",
+          "leaving_station": "Leaving station",
+          "saving_map": "Saving map",
+          "setting_blade_height": "Setting blade height",
+          "defogging": "Defogging",
+          "other": "Other"
+        }
+      },
+      "wifi_signal": {
+        "name": "Wi-Fi signal"
+      },
+      "network": {
+        "name": "Network",
+        "state": {
+          "none": "None",
+          "wifi": "Wifi",
+          "cellular": "Cellular"
+        }
+      },
+      "map_save_progress": {
+        "name": "Map save progress"
+      },
+      "blade_used_time": {
+        "name": "Blade usage"
+      },
+      "base_station_used_time": {
+        "name": "Base station usage"
+      },
+      "last_report": {
+        "name": "Last report"
+      },
+      "last_session": {
+        "name": "Last mowing session"
+      }
+    },
+    "binary_sensor": {
+      "on_station": {
+        "name": "On charging station"
+      },
+      "problem": {
+        "name": "Problem"
+      },
+      "rain_auto_return": {
+        "name": "Return when raining"
+      },
+      "child_lock": {
+        "name": "Child lock"
+      }
+    },
+    "number": {
+      "mow_height": {
+        "name": "Mowing height"
+      },
+      "volume": {
+        "name": "Volume"
+      }
+    },
+    "switch": {
+      "smart_no_go_zones": {
+        "name": "Smart no-go zone suggestions"
+      },
+      "sparse_lawn_optimization": {
+        "name": "Mow yellow grass"
+      }
+    }
+  },
+  "exceptions": {
+    "control_disabled": {
+      "message": "Control is turned off in the integration options."
+    },
+    "write_failed": {
+      "message": "Could not send the command to the mower: {error}"
+    },
+    "map_saving": {
+      "message": "The mower is saving its map; try again in a moment."
+    },
+    "not_mowing": {
+      "message": "The mower can only pause while mowing."
+    }
+  }
+}

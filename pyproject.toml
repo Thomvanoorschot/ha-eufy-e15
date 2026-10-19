@@ -1,0 +1,25 @@
+[project]
+name = "ha-eufy-e15"
+version = "0.1.0"
+description = "Local-only Home Assistant integration for the Eufy E15 robot mower"
+requires-python = ">=3.13"
+license = "MIT"
+
+[dependency-groups]
+dev = [
+  "pytest-homeassistant-custom-component",
+  "tinytuya==1.20.0",
+  "ruff",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "ASYNC", "PL"]
+ignore = ["PLR0911", "PLR0913", "PLR2004"]

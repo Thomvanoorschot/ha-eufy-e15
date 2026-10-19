@@ -1,0 +1,25 @@
+{
+  "entity": {
+    "sensor": {
+      "mission": { "default": "mdi:robot-mower" },
+      "phase": { "default": "mdi:progress-clock" },
+      "map_save_progress": { "default": "mdi:map-check" },
+      "blade_used_time": { "default": "mdi:saw-blade" },
+      "base_station_used_time": { "default": "mdi:ev-station" },
+      "last_session": { "default": "mdi:history" }
+    },
+    "binary_sensor": {
+      "on_station": { "default": "mdi:home-import-outline" },
+      "rain_auto_return": { "default": "mdi:weather-rainy" },
+      "child_lock": { "default": "mdi:lock" }
+    },
+    "number": {
+      "mow_height": { "default": "mdi:arrow-expand-vertical" },
+      "volume": { "default": "mdi:volume-high" }
+    },
+    "switch": {
+      "smart_no_go_zones": { "default": "mdi:map-marker-off" },
+      "sparse_lawn_optimization": { "default": "mdi:grass" }
+    }
+  }
+}
