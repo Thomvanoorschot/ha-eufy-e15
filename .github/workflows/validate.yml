@@ -19,6 +19,8 @@ jobs:
       - uses: hacs/action@main
         with:
           category: integration
+          # Brand assets only matter for the default HACS store, not a custom repository.
+          ignore: brands
 
   tests:
     runs-on: ubuntu-latest
@@ -26,7 +28,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          # Home Assistant releases from 2026.6 on, the minimum in hacs.json, need 3.14.
+          python-version: "3.14"
       - run: pip install pytest-homeassistant-custom-component tinytuya==1.20.0 ruff
       - run: ruff check .
       - run: ruff format --check .

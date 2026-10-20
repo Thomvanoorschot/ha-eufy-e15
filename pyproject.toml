@@ -2,7 +2,7 @@
 name = "ha-eufy-e15"
 version = "0.1.0"
 description = "Local-only Home Assistant integration for the Eufy E15 robot mower"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 license = "MIT"
 
 [dependency-groups]
