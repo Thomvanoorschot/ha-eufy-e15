@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 64 512 512">
+  <!-- grass -->
+  <g fill="#43A047">
+    <path d="M24 470 Q40 420 52 380 Q58 425 64 470 Z"/>
+    <path d="M60 470 Q80 410 104 372 Q100 425 100 470 Z"/>
+    <path d="M412 470 Q414 420 410 372 Q432 412 452 470 Z"/>
+    <path d="M446 470 Q458 418 470 384 Q478 430 488 470 Z"/>
+    <rect x="16" y="452" width="480" height="36" rx="18"/>
+  </g>
+  <!-- body -->
+  <path d="M70 360 C70 270 130 200 250 196 L330 196 C400 196 444 250 444 330 L444 360 Z" fill="#2E3B44"/>
+  <path d="M110 300 C120 250 170 222 250 220 L330 220 C380 220 412 252 418 300 Z" fill="#4CAF50"/>
+  <!-- lidar dome -->
+  <rect x="228" y="150" width="96" height="56" rx="22" fill="#2E3B44"/>
+  <rect x="246" y="166" width="60" height="18" rx="9" fill="#81C784"/>
+  <!-- wheels -->
+  <circle cx="160" cy="378" r="74" fill="#1C252B"/>
+  <circle cx="160" cy="378" r="30" fill="#B0BEC5"/>
+  <circle cx="378" cy="398" r="54" fill="#1C252B"/>
+  <circle cx="378" cy="398" r="22" fill="#B0BEC5"/>
+</svg>
