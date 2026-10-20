@@ -27,6 +27,9 @@ RECONNECT_MIN: Final = 5.0
 RECONNECT_MAX: Final = 300.0
 # How long a lost connection may last before entities report unavailable.
 UNAVAILABLE_AFTER: Final = timedelta(seconds=90)
+# How long an empty mission must last after a task before it counts as a stop on the
+# lawn. Sent home from the app, the E15 reported it about 3 s before the drive home.
+IDLE_SETTLE: Final = timedelta(seconds=15)
 
 # Data points. Codes are the mower's own declarations (product schema of the T2880).
 DP_SWITCH_GO: Final = "1"  # bool, rw: true starts a task, false ends it and drives home

@@ -8,8 +8,9 @@ from datetime import timedelta
 import pytest
 from freezegun.api import FrozenDateTimeFactory
 from homeassistant.core import HomeAssistant
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant_custom_component.common import MockConfigEntry, async_fire_time_changed
 
+from custom_components.eufy_e15.const import IDLE_SETTLE
 from custom_components.eufy_e15.protocol import Activity
 
 
@@ -22,6 +23,7 @@ PAUSED = {"107": b64(0x08, 0x02, 0x18, 0x02)}
 RETURNING = {"107": b64(0x08, 0x01, 0x18, 0x01)}
 ON_STATION = {"108": b64(0x08, 0x01, 0x10, 0x01, 0x18, 0x01)}
 IDLE = {"107": b64(0x00)}
+SAVING_MAP = {"107": b64(0x10, 0x05, 0x18, 0x01)}
 
 
 @pytest.fixture
@@ -64,11 +66,45 @@ async def test_full_session(
     assert (session.battery_start, session.battery_end) == (100, 55)
 
 
-async def test_stop_on_lawn_is_idle(hass: HomeAssistant, coordinator) -> None:
+async def test_stop_on_lawn_is_idle(
+    hass: HomeAssistant, coordinator, freezer: FrozenDateTimeFactory
+) -> None:
     coordinator._handle_dps(MOWING, False)
+    coordinator._handle_dps(SAVING_MAP, False)
     coordinator._handle_dps(IDLE, False)
+    assert coordinator.data.activity is Activity.MOWING
+    freezer.tick(IDLE_SETTLE)
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
     assert coordinator.data.activity is Activity.IDLE
     assert coordinator.sessions[0].result == "stopped"
+
+
+async def test_sent_home_from_app(hass: HomeAssistant, coordinator) -> None:
+    """Reports captured on an E15 sent home from the Eufy app mid-task."""
+    coordinator._handle_dps({"107": "CAIYAQ==", "2": False}, False)  # mowing
+    seen = []
+    for dps in (
+        {"107": "EAUYAQ=="},  # saving map
+        {"118": 50},
+        {"118": 100},
+        {"1": False},
+        {"107": "MAE="},  # saving data
+        {"107": "AA=="},  # empty, about 3 s before the drive home
+        {"107": "CAE="},  # recharge
+        {"107": "CAEQARgB"},  # recharge, relocating
+        {"108": "EAEYAQ=="},  # on the charger
+        {"108": "CAEQARgB"},
+        {"107": "EAUYAQ=="},  # saving map on the station
+        {"107": "MAE="},
+        {"107": "AA=="},
+    ):
+        coordinator._handle_dps(dps, False)
+        seen.append(coordinator.data.activity)
+    assert Activity.IDLE not in seen
+    assert seen[5:7] == [Activity.MOWING, Activity.RETURNING]
+    assert seen[-1] is Activity.DOCKED
+    assert coordinator.sessions[0].result == "returned"
 
 
 async def test_sent_home(hass: HomeAssistant, coordinator) -> None:

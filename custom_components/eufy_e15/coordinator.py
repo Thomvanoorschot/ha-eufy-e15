@@ -21,6 +21,7 @@ from .const import (
     DP_BATTERY,
     DP_BATTERY_STATUS,
     DP_ROBOT_STATUS,
+    IDLE_SETTLE,
     SESSION_HISTORY_LIMIT,
     STORAGE_VERSION,
     UNAVAILABLE_AFTER,
@@ -93,6 +94,7 @@ class E15Coordinator(DataUpdateCoordinator[MowerState]):
         self.current_session: MowSession | None = None
         self._mowing_since: datetime | None = None
         self._unavailable_timer: CALLBACK_TYPE | None = None
+        self._idle_timer: CALLBACK_TYPE | None = None
         self._pending_result: str | None = None
         self._robot_status_raw: str | None = None
         self.data = MowerState()
@@ -111,6 +113,7 @@ class E15Coordinator(DataUpdateCoordinator[MowerState]):
         await super().async_shutdown()
         if self._unavailable_timer:
             self._unavailable_timer()
+        self._cancel_idle_timer()
         await self.hass.async_add_executor_job(self.connection.stop)
         await self._async_save()
 
@@ -173,15 +176,37 @@ class E15Coordinator(DataUpdateCoordinator[MowerState]):
             else:
                 state.charger_connected = state.battery_status.charger_connected
 
-        previous = state.activity
         activity = derive_activity(state.mission, state.charger_connected)
-        if activity is not None:
-            state.activity = activity
-        if state.activity != previous:
-            self._track_session(previous, state.activity)
-            self.hass.async_create_task(self._async_save())
+        if activity is Activity.IDLE and state.activity in (Activity.MOWING, Activity.PAUSED):
+            # Sent home from the app, the E15 reports an empty mission for a few
+            # seconds between the map save and the drive home; only a lasting one is
+            # a stop on the lawn.
+            if self._idle_timer is None:
+                self._idle_timer = async_call_later(self.hass, IDLE_SETTLE, self._settle_idle)
+        elif activity is not None:
+            self._cancel_idle_timer()
+            self._set_activity(activity)
         self.last_update_success = True
         self.async_set_updated_data(state)
+
+    @callback
+    def _settle_idle(self, _now: datetime) -> None:
+        self._idle_timer = None
+        if derive_activity(self.data.mission, self.data.charger_connected) is Activity.IDLE:
+            self._set_activity(Activity.IDLE)
+            self.async_set_updated_data(self.data)
+
+    def _cancel_idle_timer(self) -> None:
+        if self._idle_timer:
+            self._idle_timer()
+            self._idle_timer = None
+
+    def _set_activity(self, activity: Activity) -> None:
+        previous = self.data.activity
+        self.data.activity = activity
+        if activity != previous:
+            self._track_session(previous, activity)
+            self.hass.async_create_task(self._async_save())
 
     # -- session history -----------------------------------------------------------
 

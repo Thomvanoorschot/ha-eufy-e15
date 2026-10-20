@@ -151,6 +151,11 @@ class MissionStatus:
         return self.mission == MISSION_NONE and self.sub_mission == SUB_MISSION_SAVING_MAP
 
     @property
+    def is_wrapping_up(self) -> bool:
+        """The map save that ends every task, before the mower goes home or stays put."""
+        return self.mission == MISSION_NONE and (self.is_saving_map or self.saving_data)
+
+    @property
     def mission_name(self) -> str:
         return MISSIONS.get(self.mission, OTHER)
 
@@ -203,6 +208,10 @@ def derive_activity(
         # recharge mission, so contact during the drive home is the dock arrival.
         if mission.is_recharge_mission and mission.state != STATE_PAUSED:
             return Activity.DOCKED if charger_connected else Activity.RETURNING
+        # Away from the station, the map save says neither where the mower goes next
+        # nor that it stopped, so the previous activity stands.
+        if mission.is_wrapping_up and not charger_connected:
+            return None
     if charger_connected is None:
         return None
     return Activity.DOCKED if charger_connected else Activity.IDLE
