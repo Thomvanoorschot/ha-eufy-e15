@@ -1,5 +1,11 @@
 # Eufy E15 Local
 
+[![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/docs/faq/custom_repositories/)
+[![GitHub release](https://img.shields.io/github/v/release/Thomvanoorschot/ha-eufy-e15)](https://github.com/Thomvanoorschot/ha-eufy-e15/releases)
+[![Validate](https://github.com/Thomvanoorschot/ha-eufy-e15/actions/workflows/validate.yml/badge.svg)](https://github.com/Thomvanoorschot/ha-eufy-e15/actions/workflows/validate.yml)
+
+[![Open your Home Assistant instance and open this repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Thomvanoorschot&repository=ha-eufy-e15&category=integration)
+
 Local-only Home Assistant integration for the **Eufy E15** robot mower (T2880).
 It talks to the mower over your LAN with the Tuya 3.5 protocol. No Eufy account is
 stored and nothing goes to the cloud at runtime.
@@ -31,8 +37,16 @@ pad direction). Set those in the Eufy app.
    tools that ship with macOS 15 or later (bash, curl, openssl, bc, jq, xxd). This is
    the only step that uses your Eufy account. The key changes if you re-pair the
    mower.
-3. Install through HACS (custom repository, category *Integration*), restart, and add
-   **Eufy E15 Local** with IP, device ID and local key.
+3. Install through HACS: the button below opens this repository in HACS in your own
+   Home Assistant, where you click **Download** and then restart.
+
+   [![Open your Home Assistant instance and open this repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Thomvanoorschot&repository=ha-eufy-e15&category=integration)
+
+   Without the button: HACS → ⋮ → *Custom repositories*, add
+   `https://github.com/Thomvanoorschot/ha-eufy-e15` with type *Integration*.
+4. Add **Eufy E15 Local** with IP, device ID and local key:
+
+   [![Open your Home Assistant instance and start setting up Eufy E15 Local.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=eufy_e15)
 
 The E15 accepts a single local session. Do not run another local integration, or
 `tools/watch_dps.py`, at the same time.
